@@ -149,10 +149,3 @@ def checksum(blob):
 
 	return r & 0x0FF
 
-tool = BootloadTool("/dev/ttyUSB0", 115200)
-s = tool._serial
-
-tool.command_echo("Hello world")
-path="/media/jacob/jacob/Documents/Workspaces/OSDev/rpi3-bootload-tool/test-image/build/kernel7.img"
-path2="/media/jacob/jacob/Documents/Workspaces/OSDev/rpi3-bootload-tool/test-image/build/file.txt"
-

@@ -57,7 +57,7 @@ dkms.conf
 
 #folders
 test-image/
-
+2018-11-13-raspbian-stretch-full.img-boot/
 
 # python
 *.pyc

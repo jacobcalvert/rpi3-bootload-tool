@@ -3,6 +3,21 @@
 extern unsigned long __end;
 
 #define MAX_CHUNKSIZE		2048
+#define BL_SESSION_START		0x93
+#define BL_SESSION_END			0x39
+
+
+#define RC_OK(b)				(b & 0x7F)
+#define RC_ERROR(b)				(b | 0x80)
+
+#define RC_OK_GENERIC			RC_OK(0)
+#define RC_ERROR_GENERIC		RC_ERROR(0)
+#define RC_ERROR_CHUNK_TOO_BIG	RC_ERROR(1)
+#define RC_ERROR_CS_BAD			RC_ERROR(2)
+#define RC_ERROR_UNKNOWN_CMD	RC_ERROR(3)
+
+
+#define WAIT_FOR_BYTE(b)		while(uart_getc() != (b))
 
 char CHUNK_BUFFER[MAX_CHUNKSIZE];
 
@@ -17,24 +32,6 @@ typedef enum bootloader_state
 typedef char (*command_handler)(void);
 typedef void (*fptr)(void);
 
-
-#define BL_SESSION_START		0x93
-#define BL_SESSION_END			0x39
-
-
-#define RC_OK(b)				(b & 0x7F)
-#define RC_ERROR(b)				(b | 0x80)
-
-#define RC_OK_GENERIC			RC_OK(0)
-#define RC_ERROR_GENERIC		RC_ERROR(0)
-#define RC_ERROR_CHUNK_TOO_BUG	RC_ERROR(1)
-#define RC_ERROR_CS_BAD			RC_ERROR(2)
-#define RC_ERROR_UNKNOWN_CMD	RC_ERROR(3)
-
-
-#define WAIT_FOR_BYTE(b)		while(uart_getc() != (b))
-
-
 char cmd_echo(void);
 char cmd_setup_transfer(void);
 char cmd_write_chunk(void);
@@ -46,11 +43,12 @@ static const command_handler COMMANDS[] = {
 	[1] = cmd_setup_transfer,
 	[2] = cmd_write_chunk,
 	[3] = cmd_finalize_transfer,
-	[4] = cmd_jump_addr
+	[4] = cmd_jump_addr, 
+	(command_handler)0
 
 };
 
-#define N_COMMANDS	5
+#define N_COMMANDS	sizeof(COMMANDS)/sizeof(command_handler)
 
 
 static unsigned int start_address = 0;
@@ -133,7 +131,7 @@ char cmd_echo(void)
 	{
 		uart_putc(uart_getc());
 	}
-	return RC_OK;
+	return RC_OK_GENERIC;
 }
 
 char cmd_setup_transfer(void)
@@ -141,7 +139,7 @@ char cmd_setup_transfer(void)
 	start_address = get_int();
 	total_size = get_int();
 	total_checksum = (unsigned char) uart_getc();
-	return RC_OK;
+	return RC_OK_GENERIC;
 }
 
 void memcpy(void *dst, void *src, unsigned int n)
@@ -161,7 +159,7 @@ char cmd_write_chunk(void)
 	unsigned int idx = 0;
 	unsigned int chunk_size = get_int();
 	char cs;
-	char *dptr = start_address + current_offset;
+	char *dptr = (char*)(start_address + current_offset);
 	if(chunk_size > MAX_CHUNKSIZE)
 	{
 		return RC_ERROR_CHUNK_TOO_BIG;
@@ -181,7 +179,7 @@ char cmd_write_chunk(void)
 	current_offset += chunk_size;
 	
 	
-	return RC_OK;
+	return RC_OK_GENERIC;
 }
 
 char cmd_finalize_transfer(void)
@@ -191,7 +189,7 @@ char cmd_finalize_transfer(void)
 	char cs = checksum(start, total_size);
 	if(cs == total_checksum)
 	{
-		return RC_OK;
+		return RC_OK_GENERIC;
 	}
 	return RC_ERROR_CS_BAD;
 
@@ -202,5 +200,5 @@ char cmd_jump_addr(void)
 	unsigned int jump_addr = get_int();
 	fptr fcn = (fptr) jump_addr;
 	fcn();
-	return RC_ERROR;
+	return RC_ERROR_GENERIC;
 }
