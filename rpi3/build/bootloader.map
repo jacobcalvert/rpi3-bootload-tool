@@ -23,94 +23,97 @@ LOAD build/boot.o
                 0x0000000000000010                CANARY_SIZE = 0x10
                 0x0000000000000000                __start = .
 
-.text           0x0000000000000000      0x798
+.text           0x0000000000000000      0x820
                 0x0000000000000000                __text_start = .
  *(.text.boot)
  .text.boot     0x0000000000000000       0x48 build/boot.o
                 0x0000000000000000                _start
  *(.text .text.* .gnu.linkonce.t.*)
- .text          0x0000000000000048      0x410 build/./entry.o
+ .text          0x0000000000000048      0x498 build/./entry.o
                 0x0000000000000048                entry
-                0x0000000000000100                get_int
-                0x0000000000000178                checksum
-                0x00000000000001d4                cmd_echo
-                0x0000000000000214                cmd_setup_transfer
-                0x0000000000000264                memcpy
-                0x00000000000002d0                cmd_write_chunk
-                0x00000000000003cc                cmd_finalize_transfer
-                0x000000000000042c                cmd_jump_addr
- .text          0x0000000000000458      0x340 build/./uart.o
-                0x0000000000000458                mbox_call
-                0x00000000000006b0                uart_putc
-                0x0000000000000708                uart_getc
-                0x0000000000000744                uart_puts
- .text          0x0000000000000798        0x0 build/boot.o
+                0x000000000000005c                high_entry
+                0x0000000000000114                get_int
+                0x000000000000018c                checksum
+                0x00000000000001e8                cmd_echo
+                0x0000000000000228                cmd_setup_transfer
+                0x0000000000000278                memcpy
+                0x00000000000002e4                cmd_write_chunk
+                0x00000000000003e0                cmd_finalize_transfer
+                0x0000000000000440                cmd_jump_addr
+                0x000000000000046c                relocate_bootloader
+ .text          0x00000000000004e0      0x340 build/./uart.o
+                0x00000000000004e0                mbox_call
+                0x0000000000000738                uart_putc
+                0x0000000000000790                uart_getc
+                0x00000000000007cc                uart_puts
+ .text          0x0000000000000820        0x0 build/boot.o
  *(.rel.text .rel.text.* .rel.gnu.linkonce.t.*)
  *(.init .init.*)
-                0x0000000000000798                __text_end = .
+                0x0000000000000820                __text_end = .
 
-.iplt           0x0000000000000798        0x0
+.iplt           0x0000000000000820        0x0
  .iplt          0x0000000000000000        0x0 build/./entry.o
 
-.rela.dyn       0x0000000000000798        0x0
+.rela.dyn       0x0000000000000820        0x0
  .rela.iplt     0x0000000000000000        0x0 build/./entry.o
  .rela.got      0x0000000000000000        0x0 build/./entry.o
 
-.rodata         0x0000000000000798        0x0
-                0x0000000000000798                __rodata_start = .
+.rodata         0x0000000000000820        0x0
+                0x0000000000000820                __rodata_start = .
  *(.rodata .rodata.*)
  *(.rel.rodata .rel.rodata.* .rel.gnu.linkonce.r.*)
  *(.rodata)
-                0x0000000000000798                __rodata_end = .
+                0x0000000000000820                __rodata_end = .
 
-.data           0x0000000000000798       0x30
-                0x0000000000000798                __data_start = .
+.data           0x0000000000000820       0x30
+                0x0000000000000820                __data_start = .
  *(.data .data.* .gnu.linkonce.d.*)
- .data          0x0000000000000798        0x0 build/./entry.o
- .data.rel.ro   0x0000000000000798       0x30 build/./entry.o
- .data          0x00000000000007c8        0x0 build/./uart.o
- .data          0x00000000000007c8        0x0 build/boot.o
+ .data          0x0000000000000820        0x0 build/./entry.o
+ .data.rel.ro   0x0000000000000820       0x30 build/./entry.o
+ .data          0x0000000000000850        0x0 build/./uart.o
+ .data          0x0000000000000850        0x0 build/boot.o
  *(.rel.data .rel.data.* .rel.gnu.linkonce.d.*)
-                0x00000000000007c8                . = ALIGN (0x4)
+                0x0000000000000850                . = ALIGN (0x4)
 
-.igot.plt       0x00000000000007c8        0x0
+.igot.plt       0x0000000000000850        0x0
  .igot.plt      0x0000000000000000        0x0 build/./entry.o
 
-.got            0x00000000000007c8       0x18
- .got           0x00000000000007c8       0x18 build/./entry.o
-                0x00000000000007c8                _GLOBAL_OFFSET_TABLE_
+.got            0x0000000000000850       0x28
+ .got           0x0000000000000850       0x28 build/./entry.o
+                0x0000000000000850                _GLOBAL_OFFSET_TABLE_
 
-.got.plt        0x00000000000007e0       0x18
- .got.plt       0x00000000000007e0       0x18 build/./entry.o
+.got.plt        0x0000000000000878       0x18
+ .got.plt       0x0000000000000878       0x18 build/./entry.o
 
-.bss            0x00000000000007f8      0x8a8
-                0x00000000000007f8                __bss_start = .
+.bss            0x0000000000000890      0x8b0
+                0x0000000000000890                __bss_start = .
  *(.bss .bss.* .gnu.linkonce.b.*)
- .bss           0x00000000000007f8       0x10 build/./entry.o
- .bss           0x0000000000000808        0x4 build/./uart.o
- .bss           0x000000000000080c        0x0 build/boot.o
+ .bss           0x0000000000000890       0x10 build/./entry.o
+ .bss           0x00000000000008a0        0x4 build/./uart.o
+ .bss           0x00000000000008a4        0x0 build/boot.o
  *(.rela.bss .rela.bss.* .rela.gnu.linkonce.b.*)
  *(COMMON)
- *fill*         0x000000000000080c        0x4 
- COMMON         0x0000000000000810      0x800 build/./entry.o
-                0x0000000000000810                CHUNK_BUFFER
- COMMON         0x0000000000001010       0x90 build/./uart.o
-                0x0000000000001010                mbox
-                0x00000000000010a0                __bss_end = .
-                0x00000000000010a0                . = ALIGN (0x8)
-                0x00000000000010a0                __end = .
-                0x00000000000008a8                __bss_size = (__bss_end - __bss_start)
+ *fill*         0x00000000000008a4        0x4 
+ COMMON         0x00000000000008a8      0x800 build/./entry.o
+                0x00000000000008a8                CHUNK_BUFFER
+ *fill*         0x00000000000010a8        0x8 
+ COMMON         0x00000000000010b0       0x90 build/./uart.o
+                0x00000000000010b0                mbox
+                0x0000000000001140                __bss_end = .
+                0x0000000000001140                . = ALIGN (0x8)
+                0x0000000000001140                __end = .
+                0x00000000000008b0                __bss_size = (__bss_end - __bss_start)
 OUTPUT(build/bootloader.elf elf64-littleaarch64)
 
-.debug_info     0x0000000000000000      0x606
- .debug_info    0x0000000000000000      0x3b3 build/./entry.o
- .debug_info    0x00000000000003b3      0x1d8 build/./uart.o
- .debug_info    0x000000000000058b       0x7b build/boot.o
+.debug_info     0x0000000000000000      0x6a3
+ .debug_info    0x0000000000000000      0x450 build/./entry.o
+ .debug_info    0x0000000000000450      0x1d8 build/./uart.o
+ .debug_info    0x0000000000000628       0x7b build/boot.o
 
-.debug_abbrev   0x0000000000000000      0x27a
- .debug_abbrev  0x0000000000000000      0x160 build/./entry.o
- .debug_abbrev  0x0000000000000160      0x106 build/./uart.o
- .debug_abbrev  0x0000000000000266       0x14 build/boot.o
+.debug_abbrev   0x0000000000000000      0x2a5
+ .debug_abbrev  0x0000000000000000      0x18b build/./entry.o
+ .debug_abbrev  0x000000000000018b      0x106 build/./uart.o
+ .debug_abbrev  0x0000000000000291       0x14 build/boot.o
 
 .debug_aranges  0x0000000000000000       0x90
  .debug_aranges
@@ -120,15 +123,15 @@ OUTPUT(build/bootloader.elf elf64-littleaarch64)
  .debug_aranges
                 0x0000000000000060       0x30 build/boot.o
 
-.debug_line     0x0000000000000000      0x208
- .debug_line    0x0000000000000000       0x99 build/./entry.o
- .debug_line    0x0000000000000099      0x12b build/./uart.o
- .debug_line    0x00000000000001c4       0x44 build/boot.o
+.debug_line     0x0000000000000000      0x215
+ .debug_line    0x0000000000000000       0xa6 build/./entry.o
+ .debug_line    0x00000000000000a6      0x12b build/./uart.o
+ .debug_line    0x00000000000001d1       0x44 build/boot.o
 
-.debug_str      0x0000000000000000      0x2e6
- .debug_str     0x0000000000000000      0x239 build/./entry.o
-                                        0x269 (size before relaxing)
- .debug_str     0x0000000000000239       0xad build/./uart.o
+.debug_str      0x0000000000000000      0x30f
+ .debug_str     0x0000000000000000      0x274 build/./entry.o
+                                        0x2b5 (size before relaxing)
+ .debug_str     0x0000000000000274       0x9b build/./uart.o
                                         0x1c6 (size before relaxing)
 
 .comment        0x0000000000000000       0x11
@@ -136,6 +139,6 @@ OUTPUT(build/bootloader.elf elf64-littleaarch64)
                                          0x12 (size before relaxing)
  .comment       0x0000000000000000       0x12 build/./uart.o
 
-.debug_frame    0x0000000000000000      0x240
- .debug_frame   0x0000000000000000      0x170 build/./entry.o
- .debug_frame   0x0000000000000170       0xd0 build/./uart.o
+.debug_frame    0x0000000000000000      0x290
+ .debug_frame   0x0000000000000000      0x1c0 build/./entry.o
+ .debug_frame   0x00000000000001c0       0xd0 build/./uart.o

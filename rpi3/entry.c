@@ -57,8 +57,16 @@ static unsigned int total_size = 0;
 static char total_checksum = 0;
 
 
+void relocate_bootloader(void);
+void high_entry(void);
+void entry(void)
+{
+	/* eventually I want to relocate the BL to the end of RAM so I can bootload at 0 */
+	/*relocate_bootloader();*/
+	high_entry();
+}
 
-void entry()
+void high_entry(void)
 {
 	bootload_state_t state = STATE_IDLE;
 	char rc;
@@ -202,3 +210,22 @@ char cmd_jump_addr(void)
 	fcn();
 	return RC_ERROR_GENERIC;
 }
+
+
+void relocate_bootloader(void)
+{
+	unsigned int end = &__end;
+	unsigned int size = end;
+	char *dst = (unsigned int)0x40000000 - size;
+	char *src = (char*)0;
+	unsigned int relocated_high_entry = (unsigned int) dst + (unsigned int) high_entry;
+	fptr fcn = (fptr) relocated_high_entry;
+
+	memcpy(dst, src, size);
+	fcn();
+	
+	
+	
+
+}
+
