@@ -59,4 +59,7 @@ dkms.conf
 test-image/
 
 
+# python
+*.pyc
+
 # End of https://www.gitignore.io/api/c
