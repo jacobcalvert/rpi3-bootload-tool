@@ -21,10 +21,15 @@ typedef void (*fptr)(void);
 #define BL_SESSION_START		0x93
 #define BL_SESSION_END			0x39
 
-#define RC_OK					0x00
-#define RC_ERROR				0xFF
-#define RC_ERROR_CHUNK_TOO_BIG	0x88
 
+#define RC_OK(b)				(b & 0x7F)
+#define RC_ERROR(b)				(b | 0x80)
+
+#define RC_OK_GENERIC			RC_OK(0)
+#define RC_ERROR_GENERIC		RC_ERROR(0)
+#define RC_ERROR_CHUNK_TOO_BUG	RC_ERROR(1)
+#define RC_ERROR_CS_BAD			RC_ERROR(2)
+#define RC_ERROR_UNKNOWN_CMD	RC_ERROR(3)
 
 
 #define WAIT_FOR_BYTE(b)		while(uart_getc() != (b))
@@ -81,7 +86,7 @@ void entry()
 				}
 				else
 				{
-					rc = RC_ERROR;
+					rc = RC_ERROR_UNKNOWN_CMD;
 				}				
 				state = STATE_CMDFINISH;
 				break;
@@ -170,7 +175,7 @@ char cmd_write_chunk(void)
 	
 	if(cs != checksum(CHUNK_BUFFER, chunk_size))
 	{
-		return checksum(CHUNK_BUFFER, chunk_size);
+		return RC_ERROR_CS_BAD;
 	}
 	memcpy(dptr, CHUNK_BUFFER, chunk_size);
 	current_offset += chunk_size;
@@ -188,7 +193,7 @@ char cmd_finalize_transfer(void)
 	{
 		return RC_OK;
 	}
-	return total_checksum;
+	return RC_ERROR_CS_BAD;
 
 }
 
