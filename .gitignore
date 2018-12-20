@@ -56,10 +56,12 @@ Mkfile.old
 dkms.conf
 
 #folders
-test-image/
+test-image/build
 2018-11-13-raspbian-stretch-full.img-boot/
+rpi3/build/
 
 # python
 *.pyc
 
 # End of https://www.gitignore.io/api/c
+
