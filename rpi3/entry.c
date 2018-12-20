@@ -1,4 +1,5 @@
 #include "uart.h"
+#include <stddef.h>
 
 extern unsigned long __end;
 
@@ -31,6 +32,11 @@ typedef enum bootloader_state
 
 typedef char (*command_handler)(void);
 typedef void (*fptr)(void);
+#define PARKED_ADDRESS	0x20000000
+void park_aux_cores(size_t);
+fptr parked_fcn = PARKED_ADDRESS;
+
+int cores_ready[4] = {0xFF};
 
 char cmd_echo(void);
 char cmd_setup_transfer(void);
@@ -56,7 +62,7 @@ static unsigned int current_offset = 0;
 static unsigned int total_size = 0;
 static char total_checksum = 0;
 
-
+void wait_core(int n);
 void relocate_bootloader(void);
 void high_entry(void);
 void entry(void)
@@ -65,12 +71,16 @@ void entry(void)
 	/*relocate_bootloader();*/
 	high_entry();
 }
-
+int core_mask = 0x8000;
 void high_entry(void)
 {
 	bootload_state_t state = STATE_IDLE;
 	char rc;
 	uart_putc(0x00);
+	cores_ready[0] = 0;
+	wait_core(1);
+	wait_core(2);
+	wait_core(3);
 	while(1)
 	{
 		switch(state)
@@ -207,11 +217,20 @@ char cmd_jump_addr(void)
 {
 	unsigned int jump_addr = get_int();
 	fptr fcn = (fptr) jump_addr;
+	parked_fcn = fcn;
 	fcn();
 	return RC_ERROR_GENERIC;
 }
-
-
+void wait_core(int n)
+{
+	while(cores_ready[n] != n);
+}
+void park_aux_cores(size_t core)
+{
+	cores_ready[core] = core;
+	while(parked_fcn == PARKED_ADDRESS);
+	parked_fcn();
+}
 void relocate_bootloader(void)
 {
 	unsigned int end = &__end;

@@ -68,6 +68,19 @@ SECTIONS
         . = ALIGN(8);
 
     }> RAM
+
+	.stack ALIGN(PAGE_SIZE) :
+	{
+		. += 32K;
+		__stack0 = .;
+		. += 32K;
+		__stack1 = .;
+		. += 32K;
+		__stack2 = .;
+		. += 32K;
+		__stack3 = .;
+		
+	} > RAM
     
 
 	

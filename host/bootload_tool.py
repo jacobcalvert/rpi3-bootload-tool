@@ -128,7 +128,7 @@ class BootloadTool(object):
 		self.__wb(self.CMD_JUMP_ADDR)
 		self.__wint(addr)
 		self._log.info("no return expected")
-		
+
 	def __end_transaction(self):
 		self._decode_rc(self.__rb())
 		if self.__rb() == self.END:

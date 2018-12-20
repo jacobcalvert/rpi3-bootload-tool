@@ -89,9 +89,11 @@ int mbox_call(unsigned char ch)
     }
     return 0;
 }
-static void uart_init()
+void uart_init()
 {
 	 register unsigned int r;
+		if (uart_initialized == 1)return;
+		uart_initialized =1;
 
 	    /* initialize UART */
 	    *UART0_CR = 0;         // turn off UART0
@@ -123,7 +125,7 @@ static void uart_init()
 	    *UART0_FBRD = 0xB;
 	    *UART0_LCRH = 0b11<<5; // 8n1
 	    *UART0_CR = 0x301;     // enable Tx, Rx, FIFO
-uart_initialized =1;
+
 }
 
 void uart_putc(unsigned char c)
