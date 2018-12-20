@@ -40,6 +40,7 @@ all: $(OBJ)
 	$(Q)$(CC) -T linker.ld -Xlinker -Map=build/bootloader.map -o build/bootloader.elf -ffreestanding -O2 -nostdlib $(OBJ)
 	$(Q)$(OBJCOPY) build/bootloader.elf -O binary build/kernel7.img
 	$(Q)$(OBJDUMP) -f build/bootloader.elf
+	
 clean:
 	$(Q)$(RM) build/*
 
@@ -55,7 +56,11 @@ build/boot.o: boot.S
 	$(Q)$(CC) $(CC_FLAGS) -c -o $@ $<
 
 
-
+test_blobs:
+	head -c 1k /dev/urandom > build/1k.bin
+	head -c 256k /dev/urandom > build/256k.bin
+	head -c 1M /dev/urandom > build/1M.bin
+	head -c 10M /dev/urandom > build/10M.bin
 
 
 

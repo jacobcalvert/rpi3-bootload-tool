@@ -9,7 +9,8 @@ class BootloadTool(object):
 	CMD_WRITE_CHUNK	= 0x02
 	CMD_FINALIZE_TRANSFER = 0x03
 	CMD_JUMP_ADDR = 0x04
-	
+	CMD_CORES_STATUS_GET = 0x05
+
 	START = 0x93
 	END	= 0x39
 
@@ -39,7 +40,7 @@ class BootloadTool(object):
 	def __wb(self, b):
 		self._log.debug("writing byte %s" % hex(b))
 		self._serial.write(chr(b))
-	
+		
 	def __ws(self, s):
 		self._log.debug("writing str '%s'" % s)
 		for c in s:
@@ -83,14 +84,14 @@ class BootloadTool(object):
 		self.__wb(cs)
 		self.__end_transaction()
 
-	def command_write_chunk(self, chunk):
+	def command_write_chunk(self, chunk, chunk_index=None):
 		self._log.info("transaction begin")
 		self._log.info("CMD_WRITE_CHUNK")
 		self.__wb(self.START)
 		self.__wb(self.CMD_WRITE_CHUNK)
 		sz = len(chunk)
 		cs = checksum(chunk)
-		self._log.info("writing chunk of size %u with cs = %s" % (sz, hex(cs)))
+		self._log.info("writing chunk (%s) of size %u with cs = %s" % (str(chunk_index), sz, hex(cs)))
 		self.__wint(sz)
 		self.__ws(chunk)
 		self.__wb(cs)
@@ -112,11 +113,13 @@ class BootloadTool(object):
 		self.command_tx_setup(start_addr, size, cs)
 		# do tx
 		idx = 0
-		chunk_size = 64
+		chunk_num = 0
+		chunk_size = 512
 		while idx < size:
 			l = min(size-idx, chunk_size)
-			self.command_write_chunk(blob[idx:l+idx])
+			self.command_write_chunk(blob[idx:l+idx], chunk_index=chunk_num)
 			idx += l
+			chunk_num += 1
 		
 		self.command_finalize_transfer()
 
@@ -128,6 +131,19 @@ class BootloadTool(object):
 		self.__wb(self.CMD_JUMP_ADDR)
 		self.__wint(addr)
 		self._log.info("no return expected")
+
+
+	def command_core_status_get(self):
+		self._log.info("transaction begin")
+		self._log.info("CMD_CORES_STATUS_GET")
+		self.__wb(self.START)
+		self.__wb(self.CMD_CORES_STATUS_GET)
+		result = self.__rb()
+		if result != 0x0F:
+			self._log.error("Not all cores online. Mask was %s" % hex(result))
+		else:
+			self._log.info("All cores online")
+		self.__end_transaction()
 
 	def __end_transaction(self):
 		self._decode_rc(self.__rb())

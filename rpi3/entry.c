@@ -1,3 +1,10 @@
+/**
+ * @file entry.c 
+ * @author Jacob Calvert <jcalvert@jacobncalvert.com>
+ * @brief this is the all in one file for the little serial bootloader I wrote
+ *
+ *
+ */
 #include "uart.h"
 #include <stddef.h>
 
@@ -43,6 +50,7 @@ char cmd_setup_transfer(void);
 char cmd_write_chunk(void);
 char cmd_finalize_transfer(void);
 char cmd_jump_addr(void);
+char cmd_core_status_get(void);
 
 static const command_handler COMMANDS[] = {
 	[0] = cmd_echo,
@@ -50,6 +58,7 @@ static const command_handler COMMANDS[] = {
 	[2] = cmd_write_chunk,
 	[3] = cmd_finalize_transfer,
 	[4] = cmd_jump_addr, 
+	[5] = cmd_core_status_get,
 	(command_handler)0
 
 };
@@ -221,6 +230,23 @@ char cmd_jump_addr(void)
 	fcn();
 	return RC_ERROR_GENERIC;
 }
+
+char cmd_core_status_get(void)
+{
+	unsigned int core = 0;
+	char result = 0;
+	while(core < 4)
+	{
+		if(cores_ready[core] == core)
+		{
+			result |= (1<<core);
+		}
+		++core;
+	}
+	uart_putc(result);
+	return RC_OK_GENERIC;
+}
+
 void wait_core(int n)
 {
 	while(cores_ready[n] != n);
@@ -242,9 +268,6 @@ void relocate_bootloader(void)
 
 	memcpy(dst, src, size);
 	fcn();
-	
-	
-	
 
 }
 

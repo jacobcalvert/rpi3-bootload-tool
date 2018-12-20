@@ -12,12 +12,17 @@ parser.add_argument("-s", "--start", help="start address", type=str)
 args = parser.parse_args()
 
 tool = BootloadTool(args.device, 115200)
+
+tool.command_core_status_get()
+
 if args.echo:
 	tool.command_echo(args.echo)
 
 if args.file:
-	tool.command_send_file(0x8000, args.file)
+	tool.command_send_file(0x100000, args.file)
 
 
 if args.start:
 	tool.command_jump_addr(int(args.start, 0))
+
+

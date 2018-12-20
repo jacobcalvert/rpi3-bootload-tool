@@ -1,10 +1,21 @@
+/*
+ * File boot.S
+ * Author: Jacob Calvert <jcalvert@jacobncalvert.com>
+ * 
+ * Revision History
+ * ------------------
+ * 0.01 - initial revision
+ */
 .section ".text.boot"
-#define STACK_END0 0x08000000
-#define STACK_END1 0x08100000
-#define STACK_END2 0x08200000
-#define STACK_END3 0x08300000
 
 .globl _start
+/*
+ * all four cores will start
+ * we read the core id and make some decisions based on that
+ * if we are core 0, we clear the BSS and go to the main entry
+ * if we're the other cores, we set up a stack and go to the aux 
+ * core parking routine
+ */
 _start:
 	mrs x0, midr_el1
 	mrs x0, mpidr_el1
